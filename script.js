@@ -1,8 +1,8 @@
 const game = () => {
-    let playerScore = 0;
-    let computerScore = 0;
-    let totalRounds = 5;
-    let currentRound = 1;
+    let playerScore;
+    let computerScore;
+    let totalRounds = 0;
+    let currentRound;
 
     const gameRound = document.getElementById('rounds');
     gameRound.textContent = `Round ${currentRound} of ${totalRounds}`;
@@ -16,19 +16,54 @@ const game = () => {
     const rockBtn = document.getElementById('rock');
     const paperBtn = document.getElementById('paper');
     const scissorsBtn = document.getElementById('scissors');
+    const replayBtn = document.getElementById('restart');
 
-    const startGame = () => {
-        //Player event listeners
-        rockBtn.addEventListener('click', () => playRound('rock'));
-        paperBtn.addEventListener('click', () => playRound('paper'));
-        scissorsBtn.addEventListener('click', () => playRound('scissors'));
+    const gameStartSetup = () => {
+        // Set game variables
+        playerScore = 0;
+        computerScore = 0;
+        currentRound = 1;
+        
+        // Reset game views
+        replayBtn.style.display = 'none';
         finalResult.style.display = 'none';
+        playerChoiceDisplay.style.display = 'none';
+        computerChoiceDisplay.style.display = 'none';
+        rockBtn.style.display = 'inline';
+        paperBtn.style.display = 'inline';
+        scissorsBtn.style.display = 'inline';
+        gameRound.textContent = `Round ${currentRound} of ${totalRounds}`;   
+        startGame();
     }
-    function playRound(playerChoice){
-        if (currentRound <= totalRounds) {
+    const startGame = () => {
+        //Ask user how many rounds they want to play
+        totalRounds = prompt("How many rounds would you like to play?");
+        console.log(totalRounds)
+        if (totalRounds === null) {
+            window.close(); // close the window if prompt is cancelled
+        } else {
+        //Check if user input is a number
+        totalRounds = parseInt(totalRounds);
+        if (isNaN (totalRounds) || totalRounds < 0) {
+            alert("Invalid input. Please enter a positive number.");
+            startGame();
+        } else {            
             //Update round information
             gameRound.textContent = `Round ${currentRound} of ${totalRounds}`;
+            //Player event listeners
+            rockBtn.addEventListener('click', () => playRound('rock'));
+            paperBtn.addEventListener('click', () => playRound('paper'));
+            scissorsBtn.addEventListener('click', () => playRound('scissors'));
+        }
+    }
+}
+    
+    function playRound(playerChoice){
+        if (currentRound <= totalRounds) {
+            gameRound.textContent = `Round ${currentRound} of ${totalRounds}`;
             console.log(`Round ${currentRound}`);
+            playerChoiceDisplay.style.display = 'block';
+            computerChoiceDisplay.style.display = 'block';    
             //Generate computer's choice
             const choices = ['rock', 'paper', 'scissors']
             const computerChoice = choices[Math.floor(Math.random() * 3)];
@@ -36,7 +71,7 @@ const game = () => {
             console.log(`Computer chose ${computerChoice}`);
             // Decide round winner
             if (playerChoice === computerChoice) {
-                result.innerHTMtextContentL = 'It\'s a tie!';
+                result.textContent = 'It\'s a tie!';
             }
             else if (playerChoice === 'rock') {
                 if (computerChoice === 'paper') {
@@ -68,6 +103,7 @@ const game = () => {
             //Update the round's results
             playerChoiceDisplay.textContent = `Player chose: ${playerChoice}`;
             computerChoiceDisplay.textContent = `Computer chose: ${computerChoice}`;
+            result.style.display = 'block';
 
             currentRound++;
             if (currentRound > totalRounds)
@@ -96,7 +132,11 @@ const game = () => {
         }
         finalResult.style.display = 'block';
         finalResult.innerHTML = `Game Over. <br> ${winner}`;
+        replayBtn.style.display = 'inline';
+        replayBtn.addEventListener('click', () => {
+            window.location.reload();
+        })
     }
-    startGame();
+    gameStartSetup();
 }
 game();
